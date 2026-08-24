@@ -1,13 +1,15 @@
 # ============================================================
 # 담당: 프롬프트/LLM 체인 (옆사람 전담 영역)
-# 이 파일만 채우면 백엔드 API(app/routers/meetings.py)는 그대로 동작함 —
+# 실제 구현은 app/services/my_service_structured.py에 있음(1주차 파일명 유지) —
+# 이 파일은 라우터(app/routers/meetings.py)가 참조하는 안정적인 진입점일 뿐,
 # extract_meeting()의 시그니처와 반환 타입(MeetingExtraction)을 바꾸지 말 것.
 # ============================================================
 #
-# 할 일
-#   1주차에 만든 my_service_structured.py(RCIF_V4 프롬프트 + LangChain 체인,
-#   이 레포 밖의 study 저장소에 있음)를 그대로 이식한다. 새로 설계하지 말고
-#   기존 프롬프트·체인 구조를 재사용할 것 — PRD-MVP.md 1절 참고.
+# 구현 위치
+#   app/services/my_service_structured.py — 1주차에 만든 RCIF_V4 프롬프트 +
+#   LangChain 체인을 그대로 이식한 곳. 새로 설계하지 말고 기존 프롬프트·체인
+#   구조를 재사용할 것 — PRD-MVP.md 1절 참고. 아래 계약은 그 파일에도 동일하게
+#   적용됨.
 #
 # 입력 계약
 #   - raw_text: 라우터(app/routers/meetings.py)에서 이미 길이 제한
@@ -39,9 +41,7 @@
 #   LLM 응답이 MeetingExtraction 스키마 검증에 실패하면 예외를 그대로
 #   전파해도 됨(MVP 범위 — 재시도·폴백 로직은 과잉설계, PRD-MVP.md 7절).
 
-from app.schemas import MeetingExtraction
 
+from app.services.my_service_structured import extract_meeting as extract_meeting
 
-def extract_meeting(raw_text: str) -> MeetingExtraction:
-    """STT 원문 텍스트 → 구조화 추출. 위 가이드라인 참고."""
-    raise NotImplementedError
+__all__ = ["extract_meeting"]
