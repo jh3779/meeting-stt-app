@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>회의 목록 — 회의록 STT 요약</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header>
+    <h1>회의 목록</h1>
+    <nav>
+      <a href="index.html">새 회의록</a>
+      <a href="list.html" aria-current="page">회의 목록</a>
+    </nav>
+  </header>
+
+  <main>
+    <p id="status" role="status"></p>
+    <ul id="meeting-list"></ul>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/list.js"></script>
+</body>
+</html>

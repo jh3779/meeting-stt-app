@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  backend:
+    name: 백엔드 (린트 + 테스트)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 의존성 설치
+        run: pip install -r app/requirements-dev.txt
+
+      - name: Ruff 린트 검사
+        run: ruff check app
+
+      - name: Ruff 포맷 검사
+        run: ruff format --check app
+
+      - name: 테스트 실행
+        run: pytest -q
+
+  client:
+    name: 클라이언트 (정적 검사)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: JS 문법 오류 검사
+        run: |
+          for f in client/js/*.js; do
+            node --check "$f"
+          done

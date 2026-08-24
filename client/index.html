@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>회의록 STT 요약</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header>
+    <h1>회의록 STT 요약</h1>
+    <nav>
+      <a href="index.html" aria-current="page">새 회의록</a>
+      <a href="list.html">회의 목록</a>
+    </nav>
+  </header>
+
+  <main>
+    <section>
+      <label for="raw-text">STT 텍스트 붙여넣기</label>
+      <textarea id="raw-text" rows="14" maxlength="20000" placeholder="회의 녹취 텍스트를 붙여넣으세요."></textarea>
+      <button id="extract-btn" type="button">추출 및 저장</button>
+      <p id="status" role="status"></p>
+    </section>
+
+    <section id="result" hidden>
+      <h2>추출 결과</h2>
+      <pre id="result-json"></pre>
+    </section>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/index.js"></script>
+</body>
+</html>
