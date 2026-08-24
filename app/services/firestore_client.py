@@ -27,11 +27,20 @@
 #     docs/PRD-MAIN.md 3·4절, docs/ERD.md 4절 참고. MVP 단계에서는 미구현.
 #   - action_items가 매우 많은 회의는 Firestore 문서 크기 제한(1MB)에
 #     걸릴 수 있음(docs/ERD.md 5절 열린 질문) — MVP에서는 무시해도 됨.
+#
+# 로컬 에뮬레이터(토큰·클라우드 비용 없이 DB 로직만 테스트)
+#   환경변수 FIRESTORE_EMULATOR_HOST가 설정돼 있으면(docker-compose.yml 참고)
+#   실제 serviceAccountKey.json 없이 AnonymousCredentials로 에뮬레이터에 붙는다.
+#   google.cloud.firestore.Client는 firebase_admin의 firestore.client()와
+#   같은 API(.collection() 등)를 제공하므로 라우터 코드는 그대로 재사용 가능.
 
+import os
 from functools import lru_cache
 
 import firebase_admin
 from firebase_admin import credentials, firestore
+from google.auth.credentials import AnonymousCredentials
+from google.cloud import firestore as gcf
 
 from app.config import get_settings
 
@@ -40,6 +49,10 @@ MEETINGS_COLLECTION = "meetings"
 
 @lru_cache
 def get_firestore_client():
+    emulator_host = os.environ.get("FIRESTORE_EMULATOR_HOST")
+    if emulator_host:
+        return gcf.Client(project="demo-meeting-stt", credentials=AnonymousCredentials())
+
     settings = get_settings()
     if not firebase_admin._apps:
         cred = credentials.Certificate(settings.firestore_service_account_path)
