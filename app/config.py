@@ -1,6 +1,13 @@
 from functools import lru_cache
+from pathlib import Path
 
+from dotenv import load_dotenv
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# .env의 LANGCHAIN_* 값(트레이싱 켜기)은 우리 Settings에 선언되지 않은 필드라
+# pydantic-settings만으로는 os.environ에 반영되지 않는다 — LangChain/LangSmith가
+# os.environ을 직접 읽으므로 load_dotenv()로 프로세스 환경 전체에 로드해준다.
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 
 class Settings(BaseSettings):
