@@ -29,12 +29,15 @@
 #     걸릴 수 있음(docs/ERD.md 5절 열린 질문) — MVP에서는 무시해도 됨.
 #
 # 로컬 에뮬레이터(토큰·클라우드 비용 없이 DB 로직만 테스트)
-#   환경변수 FIRESTORE_EMULATOR_HOST가 설정돼 있으면(docker-compose.yml 참고)
-#   실제 serviceAccountKey.json 없이 AnonymousCredentials로 에뮬레이터에 붙는다.
-#   google.cloud.firestore.Client는 firebase_admin의 firestore.client()와
-#   같은 API(.collection() 등)를 제공하므로 라우터 코드는 그대로 재사용 가능.
+#   Settings.firestore_emulator_host(.env의 FIRESTORE_EMULATOR_HOST, docker-compose.yml
+#   참고)가 설정돼 있으면 실제 serviceAccountKey.json 없이 AnonymousCredentials로
+#   에뮬레이터에 붙는다. google.cloud.firestore.Client는 firebase_admin의
+#   firestore.client()와 같은 API(.collection() 등)를 제공하므로 라우터 코드는
+#   그대로 재사용 가능.
+#
+# SERVER_TIMESTAMP도 이 모듈에서 가져다 쓸 것 — firebase_admin을 다른 파일에서
+# 직접 import하면 위 "접근 경로 단일화" 원칙이 깨진다.
 
-import os
 from functools import lru_cache
 
 import firebase_admin
@@ -45,15 +48,15 @@ from google.cloud import firestore as gcf
 from app.config import get_settings
 
 MEETINGS_COLLECTION = "meetings"
+SERVER_TIMESTAMP = gcf.SERVER_TIMESTAMP
 
 
 @lru_cache
 def get_firestore_client():
-    emulator_host = os.environ.get("FIRESTORE_EMULATOR_HOST")
-    if emulator_host:
+    settings = get_settings()
+    if settings.firestore_emulator_host:
         return gcf.Client(project="demo-meeting-stt", credentials=AnonymousCredentials())
 
-    settings = get_settings()
     if not firebase_admin._apps:
         cred = credentials.Certificate(settings.firestore_service_account_path)
         firebase_admin.initialize_app(cred)

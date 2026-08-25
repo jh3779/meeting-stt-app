@@ -8,7 +8,11 @@ from app.schemas import (
     MeetingSummary,
 )
 from app.services.extraction import extract_meeting
-from app.services.firestore_client import MEETINGS_COLLECTION, get_firestore_client
+from app.services.firestore_client import (
+    MEETINGS_COLLECTION,
+    SERVER_TIMESTAMP,
+    get_firestore_client,
+)
 
 router = APIRouter(prefix="/meetings", tags=["meetings"])
 
@@ -30,7 +34,7 @@ def create_meeting(request: MeetingExtractRequest) -> MeetingExtractResponse:
         {
             **extraction.model_dump(),
             "raw_text": request.raw_text,
-            "created_at": firestore_server_timestamp(),
+            "created_at": SERVER_TIMESTAMP,
         }
     )
     return MeetingExtractResponse(id=doc_ref.id, **extraction.model_dump())
@@ -52,9 +56,3 @@ def get_meeting(meeting_id: str) -> MeetingDetail:
     if not doc.exists:
         raise HTTPException(status_code=404, detail="회의를 찾을 수 없습니다.")
     return MeetingDetail(id=doc.id, **doc.to_dict())
-
-
-def firestore_server_timestamp():
-    from firebase_admin import firestore
-
-    return firestore.SERVER_TIMESTAMP

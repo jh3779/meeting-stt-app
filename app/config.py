@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     openai_api_key: str = ""
     openai_model: str = "gpt-4o-mini"
     firestore_service_account_path: str = "serviceAccountKey.json"
+    firestore_emulator_host: str | None = None
     max_input_chars: int = 20_000
 
 
