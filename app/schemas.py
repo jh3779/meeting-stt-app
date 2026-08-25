@@ -23,6 +23,10 @@ class MeetingExtractRequest(BaseModel):
     raw_text: str
 
 
+class MeetingExtractResponse(MeetingExtraction):
+    id: str
+
+
 class MeetingSummary(BaseModel):
     id: str
     title: str
