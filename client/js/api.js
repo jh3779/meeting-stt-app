@@ -1,11 +1,12 @@
 // 백엔드(FastAPI) 호출 전용 — 앱은 Firestore를 직접 알지 못함 (PRD-MVP.md 4절)
 // 로컬에서 8000번 포트가 다른 프로젝트와 겹치는 등의 이유로 백엔드 주소를
 // 바꿔야 하면 ?api=http://localhost:8001 쿼리 파라미터로 덮어쓸 수 있음
-// (한 번 지정하면 페이지 이동 중에도 sessionStorage로 유지됨).
+// (localStorage에 저장되어 새 탭·새 창을 열어도, 브라우저를 껐다 켜도 유지됨 —
+// sessionStorage는 새 탭에서 초기화되어 매번 다시 지정해야 하는 문제가 있었음).
 const apiParam = new URLSearchParams(window.location.search).get("api");
-if (apiParam) sessionStorage.setItem("apiBaseUrl", apiParam);
+if (apiParam) localStorage.setItem("apiBaseUrl", apiParam);
 const API_BASE_URL =
-  apiParam || sessionStorage.getItem("apiBaseUrl") || window.API_BASE_URL || "http://localhost:8000";
+  apiParam || localStorage.getItem("apiBaseUrl") || window.API_BASE_URL || "http://localhost:8000";
 
 function friendlyErrorMessage(status, detail) {
   if (status === 404) return "회의를 찾을 수 없습니다.";
