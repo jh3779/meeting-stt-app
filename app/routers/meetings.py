@@ -1,15 +1,24 @@
 from fastapi import APIRouter, HTTPException
 
 from app.config import get_settings
-from app.schemas import MeetingDetail, MeetingExtraction, MeetingExtractRequest, MeetingSummary
+from app.schemas import (
+    MeetingDetail,
+    MeetingExtractRequest,
+    MeetingExtractResponse,
+    MeetingSummary,
+)
 from app.services.extraction import extract_meeting
-from app.services.firestore_client import MEETINGS_COLLECTION, get_firestore_client
+from app.services.firestore_client import (
+    MEETINGS_COLLECTION,
+    SERVER_TIMESTAMP,
+    get_firestore_client,
+)
 
 router = APIRouter(prefix="/meetings", tags=["meetings"])
 
 
-@router.post("/extract", response_model=MeetingExtraction)
-def create_meeting(request: MeetingExtractRequest) -> MeetingExtraction:
+@router.post("/extract", response_model=MeetingExtractResponse)
+def create_meeting(request: MeetingExtractRequest) -> MeetingExtractResponse:
     settings = get_settings()
     if len(request.raw_text) > settings.max_input_chars:
         raise HTTPException(
@@ -25,10 +34,10 @@ def create_meeting(request: MeetingExtractRequest) -> MeetingExtraction:
         {
             **extraction.model_dump(),
             "raw_text": request.raw_text,
-            "created_at": firestore_server_timestamp(),
+            "created_at": SERVER_TIMESTAMP,
         }
     )
-    return extraction
+    return MeetingExtractResponse(id=doc_ref.id, **extraction.model_dump())
 
 
 @router.get("", response_model=list[MeetingSummary])
@@ -47,9 +56,3 @@ def get_meeting(meeting_id: str) -> MeetingDetail:
     if not doc.exists:
         raise HTTPException(status_code=404, detail="회의를 찾을 수 없습니다.")
     return MeetingDetail(id=doc.id, **doc.to_dict())
-
-
-def firestore_server_timestamp():
-    from firebase_admin import firestore
-
-    return firestore.SERVER_TIMESTAMP

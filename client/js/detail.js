@@ -14,28 +14,18 @@ const detailEl = document.getElementById("meeting-detail");
     statusEl.textContent = "";
 
     document.getElementById("meeting-title").textContent = meeting.title;
-    document.getElementById("meeting-date").textContent = meeting.meeting_date;
-    document.getElementById("meeting-status").textContent = meeting.status;
+    document.getElementById("meeting-date").textContent = meeting.meeting_date || "일시 미상";
 
-    const decisionsEl = document.getElementById("meeting-decisions");
-    for (const decision of meeting.decisions) {
-      const li = document.createElement("li");
-      li.textContent = decision;
-      decisionsEl.appendChild(li);
-    }
+    const statusBadgeContainer = document.getElementById("meeting-status-badge");
+    statusBadgeContainer.innerHTML = "";
+    statusBadgeContainer.appendChild(createStatusBadge(meeting.status));
 
-    const actionItemsEl = document.getElementById("meeting-action-items");
-    for (const item of meeting.action_items) {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<td></td><td></td><td></td>`;
-      tr.children[0].textContent = item.task;
-      tr.children[1].textContent = item.owner;
-      tr.children[2].textContent = item.deadline ?? "-";
-      actionItemsEl.appendChild(tr);
-    }
+    renderDecisions(document.getElementById("meeting-decisions"), meeting.decisions);
+    renderActionItems(document.getElementById("meeting-action-items"), meeting.action_items);
 
     detailEl.hidden = false;
   } catch (err) {
+    statusEl.dataset.tone = "error";
     statusEl.textContent = `오류: ${err.message}`;
   }
 })();

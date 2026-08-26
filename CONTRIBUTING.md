@@ -18,3 +18,29 @@ pre-commit install
 ```
 
 커밋할 때마다 `.pre-commit-config.yaml`에 정의된 검사(공백/개행 정리, 백엔드 ruff lint·format)가 자동 실행된다.
+
+## DB(Firestore) 로직만 테스트하기 — OpenAI 토큰 아끼는 법
+
+`POST /meetings/extract`를 실제로 호출하면 매번 `extract_meeting()`이 OpenAI를 호출한다.
+수업에서 받은 토큰은 한정돼 있으니, **DB 저장/조회 로직만 확인하고 싶을 때는 실제
+LLM을 부르지 말고 아래 방식을 쓴다** — extraction.py가 아직 미구현이어도 이 방식으로
+라우터·Firestore 연동은 먼저 검증할 수 있다.
+
+1. 로컬 Firestore 에뮬레이터 실행(서비스 계정 키·클라우드 비용 필요 없음):
+   ```bash
+   docker compose up -d
+   ```
+2. `.env`에 `FIRESTORE_EMULATOR_HOST=localhost:8080` 추가(`.env.example` 참고).
+3. DB 계층만 검증하는 테스트 실행 — `extract_meeting()`을 픽스처로 대체해서 실제로
+   OpenAI를 부르지 않는다:
+   ```bash
+   FIRESTORE_EMULATOR_HOST=localhost:8080 pytest app/tests/test_meetings_with_emulator.py -v
+   ```
+   - 픽스처: `app/tests/fixtures/sample_meeting_transcript.txt`(가상 STT 원문) +
+     `sample_meeting_extraction.json`(그에 대응하는 가짜 구조화 결과) — 둘 다 실제
+     수업 녹취가 아닌 완전히 지어낸 시나리오라 자유롭게 커밋·공유해도 됨.
+4. 다 쓰면 에뮬레이터 종료: `docker compose down`
+
+실제 LLM 체인(`extract_meeting`)까지 붙여서 진짜로 확인해야 할 때만 `.env`에서
+`FIRESTORE_EMULATOR_HOST`를 비우고(또는 주석 처리) 실제 Firestore+OpenAI로 테스트한다 —
+이때는 최소 횟수로만 확인할 것.
