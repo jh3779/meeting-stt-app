@@ -1,0 +1,10 @@
+# Streamlit Cloud(share.streamlit.io)는 레포 루트의 requirements.txt를 읽는다.
+# 백엔드(app/requirements.txt)와 별개 — streamlit_app.py가 app.services.*를
+# 직접 import해서 쓰는 데 필요한 것만 추림(fastapi/uvicorn은 불필요).
+streamlit
+pydantic
+pydantic-settings
+firebase-admin
+langchain
+langchain-openai
+python-dotenv

@@ -4,17 +4,28 @@
 !.env.example
 serviceAccountKey.json
 
+# Streamlit Cloud secrets (실제 키 — 템플릿인 secrets.toml.example만 커밋)
+.streamlit/secrets.toml
+
 # Python
 .venv/
 venv/
 __pycache__/
 *.py[cod]
 *.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
 
 # Node (client가 JS 프레임워크일 경우 대비)
 node_modules/
 dist/
 build/
 
+# IDE
+.vscode/
+.idea/
+
 # OS
 .DS_Store
+Thumbs.db

@@ -21,10 +21,10 @@ jobs:
         run: pip install -r app/requirements-dev.txt
 
       - name: Ruff 린트 검사
-        run: ruff check app
+        run: ruff check app streamlit_app.py
 
       - name: Ruff 포맷 검사
-        run: ruff format --check app
+        run: ruff format --check app streamlit_app.py
 
       - name: 테스트 실행
         run: pytest -q
