@@ -57,6 +57,50 @@ flowchart TD
 ```
 (`notes/`에 있는 `sample_meeting.md` 예시 데이터를 그대로 매핑한 것)
 
+### 실제로 저장된 문서 (로컬 Firestore 에뮬레이터, 2026-08-26 확인)
+
+계획이 아니라 실제로 동작해서 저장된 원본 — REST API(`GET /v1/.../documents/meetings`)로
+직접 조회한 결과. Firestore 고유의 타입 표기(`stringValue`/`arrayValue`/`mapValue`)가
+그대로 보임 — 위 예시 JSON을 우리 앱이 어떻게 감싸서 저장하는지 보여줌:
+
+```json
+{
+  "name": "projects/demo-meeting-stt/databases/(default)/documents/meetings/8GgDVEZHWTCCXxkOkfuj",
+  "fields": {
+    "title": { "stringValue": "3월 신규 기능 릴리스 일정 점검" },
+    "meeting_date": { "stringValue": "언급 없음" },
+    "status": { "stringValue": "회의록" },
+    "decisions": {
+      "arrayValue": {
+        "values": [
+          { "stringValue": "알림 기능 프론트엔드 연동은 다음 주 금요일까지 완료" },
+          { "stringValue": "다크모드 지원은 이번 릴리스 범위에서 제외, 다음 분기로 이월" }
+        ]
+      }
+    },
+    "action_items": {
+      "arrayValue": {
+        "values": [
+          { "mapValue": { "fields": {
+            "task": { "stringValue": "알림 기능 프론트엔드 연동 완료" },
+            "owner": { "stringValue": "김도윤" },
+            "deadline": { "stringValue": "다음 주 금요일" }
+          }}},
+          { "mapValue": { "fields": {
+            "task": { "stringValue": "결제 모듈 PG사 연동 오류 원인 파악" },
+            "owner": { "stringValue": "박서연" },
+            "deadline": { "stringValue": "내일" }
+          }}}
+        ]
+      }
+    }
+  }
+}
+```
+
+`action_items`가 `arrayValue` 안에 `mapValue`로 그대로 중첩되어 있다는 게 3절 비교의
+핵심 증거 — RDBMS였다면 별도 테이블+FK였을 것이 여기선 문서 하나 안의 배열 필드다.
+
 ## 3. 만약 RDBMS(PostgreSQL)로 설계했다면? (비교 — 발표 근거)
 
 ```mermaid
